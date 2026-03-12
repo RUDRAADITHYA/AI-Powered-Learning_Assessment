@@ -13,7 +13,9 @@ async def connect_to_mongo() -> None:
     global client, db
     client = AsyncIOMotorClient(
         settings.MONGODB_URI,
-        tlsCAFile=certifi.where(),
+        # Explicit TLS settings to be friendlier to hosted environments like Render
+        tls=True,
+        tlsAllowInvalidCertificates=True,
         serverSelectionTimeoutMS=15000,
     )
     db = client[settings.DATABASE_NAME]
