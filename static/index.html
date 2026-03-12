@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adaptive Quiz - AI Powered</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --border: #e5e7eb;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text);
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            margin-bottom: 20px;
+        }
+        
+        .hidden { display: none !important; }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        .header h1 { font-size: 2.5em; font-weight: 800; margin-bottom: 8px; }
+        .header p { opacity: 0.9; font-size: 1.1em; }
+        
+        /* Forms */
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1em;
+            transition: all 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3); }
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+        }
+        .btn-block { width: 100%; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        /* Auth Tabs */
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 24px;
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 4px;
+        }
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .auth-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Test Config */
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .config-option {
+            padding: 20px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .config-option:hover { border-color: var(--primary-light); }
+        .config-option.selected {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+        .config-option .icon { font-size: 2em; margin-bottom: 8px; }
+        .config-option .label { font-weight: 600; }
+        
+        /* Question Display */
+        .progress-bar {
+            height: 8px;
+            background: var(--bg);
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            color: var(--text-light);
+            font-size: 0.9em;
+        }
+        .question-text {
+            font-size: 1.3em;
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        .options-list { list-style: none; }
+        .option-btn {
+            width: 100%;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: white;
+            text-align: left;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+        .option-btn:hover:not(:disabled) { border-color: var(--primary); background: rgba(99,102,241,0.03); }
+        .option-btn.correct { border-color: var(--success); background: rgba(16, 185, 129, 0.1); }
+        .option-btn.incorrect { border-color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+        .option-btn:disabled { cursor: default; }
+        .option-letter {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 14px;
+            color: var(--primary);
+        }
+        
+        /* Feedback */
+        .feedback {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-top: 16px;
+        }
+        .feedback.correct { background: rgba(16, 185, 129, 0.1); color: #065f46; }
+        .feedback.incorrect { background: rgba(239, 68, 68, 0.1); color: #991b1b; }
+        .explanation { margin-top: 8px; font-size: 0.9em; color: var(--text-light); }
+        
+        /* Results */
+        .result-header { text-align: center; margin-bottom: 30px; }
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        .score-circle .score { font-size: 2.5em; font-weight: 800; }
+        .score-circle .label { font-size: 0.9em; opacity: 0.9; }
+        
+        .proficiency-badge {
+            display: inline-block;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.1em;
+            margin: 16px 0;
+        }
+        .proficiency-badge.pro { background: var(--success); color: white; }
+        .proficiency-badge.average { background: var(--warning); color: white; }
+        .proficiency-badge.weak { background: var(--danger); color: white; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 24px 0;
+        }
+        .stat-box {
+            text-align: center;
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 12px;
+        }
+        .stat-box .value { font-size: 1.8em; font-weight: 700; color: var(--primary); }
+        .stat-box .label { font-size: 0.85em; color: var(--text-light); margin-top: 4px; }
+        
+        .study-plan {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 24px;
+        }
+        .study-plan h3 { color: var(--primary-dark); margin-bottom: 16px; }
+        .study-plan-content { white-space: pre-wrap; line-height: 1.7; }
+        
+        /* History */
+        .history-list { margin-top: 16px; }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        .history-info { flex: 1; }
+        .history-subject { font-weight: 600; }
+        .history-meta { font-size: 0.85em; color: var(--text-light); margin-top: 4px; }
+        .history-score {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        /* User Badge */
+        .user-badge {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        .user-badge .username { font-weight: 600; }
+        .user-badge .logout { cursor: pointer; opacity: 0.8; }
+        .user-badge .logout:hover { opacity: 1; }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Subject Grid */
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .subject-btn {
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .subject-btn:hover { border-color: var(--primary-light); }
+        .subject-btn.selected { border-color: var(--primary); background: rgba(99,102,241,0.05); }
+        .subject-btn .emoji { font-size: 1.5em; display: block; margin-bottom: 6px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🧠 Adaptive Quiz</h1>
+            <p>AI-Powered Learning Assessment</p>
+        </div>
+        
+        <!-- User Badge (shown when logged in) -->
+        <div class="user-badge hidden" id="userBadge">
+            <span>👤 <span class="username" id="displayUsername">user</span></span>
+            <span class="logout" onclick="logout()">🚪 Logout</span>
+        </div>
+        
+        <!-- ===== AUTH SCREEN ===== -->
+        <div id="authScreen" class="card">
+            <div class="auth-tabs">
+                <div class="auth-tab active" onclick="switchAuthTab('login')">Login</div>
+                <div class="auth-tab" onclick="switchAuthTab('register')">Register</div>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="loginUsername" required placeholder="Enter your username">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" required placeholder="Enter your password">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Login</button>
+            </form>
+            
+            <!-- Register Form -->
+            <form id="registerForm" class="hidden" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="regUsername" required placeholder="Choose a username" minlength="3">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" required placeholder="Min 6 characters" minlength="6">
+                </div>
+                <div class="form-group">
+                    <label>Full Name (optional)</label>
+                    <input type="text" id="regFullName" placeholder="Your name">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+            </form>
+        </div>
+        
+        <!-- ===== DASHBOARD SCREEN ===== -->
+        <div id="dashboardScreen" class="hidden">
+            <div class="card">
+                <h2 style="margin-bottom: 24px;">📚 Start a New Test</h2>
+                
+                <div class="form-group">
+                    <label>📚 Select Subject</label>
+                    <div class="subject-grid" id="subjectGrid">
+                        <div class="subject-btn" data-subject="Algebra" onclick="selectSubject(this)">
+                            <span class="emoji">📐</span> Algebra
+                        </div>
+                        <div class="subject-btn" data-subject="Geometry" onclick="selectSubject(this)">
+                            <span class="emoji">🔺</span> Geometry
+                        </div>
+                        <div class="subject-btn" data-subject="Vocabulary" onclick="selectSubject(this)">
+                            <span class="emoji">📚</span> Vocabulary
+                        </div>
+                        <div class="subject-btn" data-subject="Reading" onclick="selectSubject(this)">
+                            <span class="emoji">📖</span> Reading
+                        </div>
+                        <div class="subject-btn" data-subject="Math" onclick="selectSubject(this)">
+                            <span class="emoji">🧮</span> All Math
+                        </div>
+                        <div class="subject-btn" data-subject="Verbal" onclick="selectSubject(this)">
+                            <span class="emoji">💬</span> All Verbal
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Difficulty Level</label>
+                    <div class="config-grid">
+                        <div class="config-option" data-level="easy" onclick="selectLevel(this)">
+                            <div class="icon">🌱</div>
+                            <div class="label">Easy</div>
+                        </div>
+                        <div class="config-option selected" data-level="medium" onclick="selectLevel(this)">
+                            <div class="icon">⚡</div>
+                            <div class="label">Medium</div>
+                        </div>
+                        <div class="config-option" data-level="hard" onclick="selectLevel(this)">
+                            <div class="icon">🔥</div>
+                            <div class="label">Hard</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Number of Questions</label>
+                    <select id="numQuestions">
+                        <option value="5">5 Questions (~3 min)</option>
+                        <option value="10" selected>10 Questions (~6 min)</option>
+                        <option value="15">15 Questions (~9 min)</option>
+                        <option value="20">20 Questions (~12 min)</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-primary btn-block" onclick="startTest()" id="startTestBtn">
+                    🚀 Start Test
+                </button>
+            </div>
+            
+            <!-- Test History -->
+            <div class="card">
+                <h3 style="margin-bottom: 16px;">📊 Your Test History</h3>
+                <div id="historyList" class="history-list">
+                    <p style="color: var(--text-light); text-align: center;">No tests taken yet</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ===== LOADING SCREEN ===== -->
+        <div id="loadingScreen" class="card hidden">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p id="loadingText">Generating questions with AI...</p>
+            </div>
+        </div>
+        
+        <!-- ===== QUESTION SCREEN ===== -->
+        <div id="questionScreen" class="card hidden">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            
+            <div class="question-header">
+                <span>Question <span id="qNum">1</span> of <span id="qTotal">10</span></span>
+                <span id="qTopic">Mathematics</span>
+            </div>
+            
+            <div class="question-text" id="questionText">Loading question...</div>
+            
+            <ul class="options-list" id="optionsList"></ul>
+            
+            <div id="feedback" class="feedback hidden">
+                <div id="feedbackText"></div>
+                <div id="explanationText" class="explanation"></div>
+            </div>
+            
+            <button class="btn btn-primary btn-block hidden" id="nextBtn" onclick="showNextQuestion()">
+                Next Question →
+            </button>
+        </div>
+        
+        <!-- ===== RESULTS SCREEN ===== -->
+        <div id="resultsScreen" class="card hidden">
+            <div class="result-header">
+                <h2>🎉 Test Complete!</h2>
+                
+                <div class="score-circle">
+                    <div class="score" id="finalScore">8/10</div>
+                    <div class="label">Score</div>
+                </div>
+                
+                <div id="proficiencyBadge" class="proficiency-badge pro">🏆 PRO</div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="value" id="correctCount">8</div>
+                    <div class="label">Correct</div>
+                </div>
+                <div class="stat-box">
+                    <div class="value" id="incorrectCount">2</div>
+                    <div class="label">Incorrect</div>
+                </div>
+                <div class="stat-box">
+                    <div class="value" id="percentScore">80%</div>
+                    <div class="label">Accuracy</div>
+                </div>
+            </div>
+            
+            <div class="study-plan">
+                <h3>📝 AI Study Recommendations</h3>
+                <div class="study-plan-content" id="studyPlanContent">Loading recommendations...</div>
+            </div>
+            
+            <div style="margin-top: 24px; text-align: center;">
+                <button class="btn btn-primary" onclick="backToDashboard()">🏠 Back to Dashboard</button>
+                <button class="btn btn-secondary" style="margin-left: 12px;" onclick="retakeTest()">🔄 Retake Test</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+const API = window.location.origin;
+
+// State
+let currentUser = null;
+let sessionId = null;
+let currentQuestion = null;
+let questions = [];
+let questionIndex = 0;
+let selectedSubject = null;
+let selectedLevel = 'medium';
+let correctCount = 0;
+let answered = false;
+let testConfig = {};
+
+// ─── Auth Functions ───────────────────────────────────────────
+
+function switchAuthTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.auth-tab:${tab === 'login' ? 'first-child' : 'last-child'}`).classList.add('active');
+    
+    if (tab === 'login') {
+        show('loginForm');
+        hide('registerForm');
+    } else {
+        hide('loginForm');
+        show('registerForm');
+    }
+}
+
+async function handleLogin(e) {
+    e.preventDefault();
+    const username = document.getElementById('loginUsername').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    try {
+        const res = await fetch(`${API}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        
+        const data = await res.json();
+        
+        if (!res.ok) {
+            alert(data.detail || 'Login failed');
+            return;
+        }
+        
+        currentUser = data.user;
+        localStorage.setItem('user', JSON.stringify(data.user));
+        showDashboard();
+    } catch (err) {
+        alert('Login error: ' + err.message);
+    }
+}
+
+async function handleRegister(e) {
+    e.preventDefault();
+    const username = document.getElementById('regUsername').value;
+    const email = document.getElementById('regEmail').value;
+    const password = document.getElementById('regPassword').value;
+    const fullName = document.getElementById('regFullName').value;
+    
+    try {
+        const res = await fetch(`${API}/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password, full_name: fullName || null })
+        });
+        
+        const data = await res.json();
+        
+        if (!res.ok) {
+            alert(data.detail || 'Registration failed');
+            return;
+        }
+        
+        currentUser = data.user;
+        localStorage.setItem('user', JSON.stringify(data.user));
+        showDashboard();
+    } catch (err) {
+        alert('Registration error: ' + err.message);
+    }
+}
+
+function logout() {
+    currentUser = null;
+    localStorage.removeItem('user');
+    hide('userBadge');
+    hide('dashboardScreen');
+    show('authScreen');
+}
+
+function showDashboard() {
+    hide('authScreen');
+    hide('questionScreen');
+    hide('resultsScreen');
+    hide('loadingScreen');
+    show('dashboardScreen');
+    show('userBadge');
+    document.getElementById('displayUsername').textContent = currentUser.username;
+    loadHistory();
+}
+
+// ─── Test Config Functions ────────────────────────────────────
+
+function selectSubject(el) {
+    document.querySelectorAll('.subject-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedSubject = el.dataset.subject;
+}
+
+function selectLevel(el) {
+    document.querySelectorAll('.config-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedLevel = el.dataset.level;
+}
+
+// ─── Test Functions ───────────────────────────────────────────
+
+async function startTest() {
+    if (!selectedSubject) {
+        alert('Please select a subject');
+        return;
+    }
+    
+    const numQuestions = parseInt(document.getElementById('numQuestions').value);
+    testConfig = {
+        subject: selectedSubject,
+        level: selectedLevel,
+        num_questions: numQuestions
+    };
+    
+    hide('dashboardScreen');
+    show('loadingScreen');
+    document.getElementById('loadingText').textContent = `Generating ${numQuestions} ${selectedLevel} questions about ${selectedSubject}...`;
+    
+    try {
+        const res = await fetch(`${API}/diagnostic/start`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: currentUser.username,
+                subject: selectedSubject,
+                level: selectedLevel,
+                num_questions: numQuestions
+            })
+        });
+        
+        const data = await res.json();
+        
+        if (!res.ok) {
+            throw new Error(data.detail || 'Failed to start test');
+        }
+        
+        sessionId = data.session_id;
+        currentQuestion = data.first_question;
+        questionIndex = 0;
+        correctCount = 0;
+        
+        hide('loadingScreen');
+        show('questionScreen');
+        renderQuestion();
+    } catch (err) {
+        alert('Error starting test: ' + err.message);
+        hide('loadingScreen');
+        show('dashboardScreen');
+    }
+}
+
+function renderQuestion() {
+    const q = currentQuestion;
+    answered = false;
+    
+    document.getElementById('qNum').textContent = q.question_number;
+    document.getElementById('qTotal').textContent = testConfig.num_questions;
+    document.getElementById('qTopic').textContent = q.topic;
+    document.getElementById('questionText').textContent = q.question_text;
+    
+    // Progress bar
+    const progress = ((q.question_number - 1) / testConfig.num_questions) * 100;
+    document.getElementById('progressFill').style.width = `${progress}%`;
+    
+    // Render options
+    const letters = ['A', 'B', 'C', 'D'];
+    const optList = document.getElementById('optionsList');
+    optList.innerHTML = '';
+    
+    q.options.forEach((opt, i) => {
+        const li = document.createElement('li');
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span class="option-letter">${letters[i]}</span>${opt}`;
+        btn.onclick = () => submitAnswer(opt, btn);
+        li.appendChild(btn);
+        optList.appendChild(li);
+    });
+    
+    // Hide feedback and next button
+    hide('feedback');
+    hide('nextBtn');
+}
+
+async function submitAnswer(answer, btnEl) {
+    if (answered) return;
+    answered = true;
+    
+    // Disable all buttons
+    document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+    
+    try {
+        const res = await fetch(`${API}/diagnostic/answer`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                session_id: sessionId,
+                question_id: currentQuestion.question_id,
+                selected_answer: answer
+            })
+        });
+        
+        const data = await res.json();
+        
+        if (!res.ok) {
+            throw new Error(data.detail || 'Failed to submit answer');
+        }
+        
+        // Show feedback
+        const feedbackEl = document.getElementById('feedback');
+        const feedbackText = document.getElementById('feedbackText');
+        const explanationText = document.getElementById('explanationText');
+        
+        if (data.is_correct) {
+            correctCount++;
+            btnEl.classList.add('correct');
+            feedbackEl.className = 'feedback correct';
+            feedbackText.textContent = '✅ Correct!';
+        } else {
+            btnEl.classList.add('incorrect');
+            feedbackEl.className = 'feedback incorrect';
+            feedbackText.textContent = `❌ Incorrect. The answer was: ${data.correct_answer}`;
+            
+            // Highlight correct answer
+            document.querySelectorAll('.option-btn').forEach(b => {
+                if (b.textContent.includes(data.correct_answer)) {
+                    b.classList.add('correct');
+                }
+            });
+        }
+        
+        // Show explanation if available
+        if (data.explanation) {
+            explanationText.textContent = data.explanation;
+            show('explanationText');
+        } else {
+            hide('explanationText');
+        }
+        
+        show('feedback');
+        
+        // Update next button
+        const nextBtn = document.getElementById('nextBtn');
+        if (data.is_complete) {
+            nextBtn.textContent = 'View Results →';
+            nextBtn.onclick = () => showResults();
+        } else {
+            nextBtn.textContent = 'Next Question →';
+            currentQuestion = data.next_question;
+            nextBtn.onclick = () => {
+                renderQuestion();
+            };
+        }
+        show('nextBtn');
+        
+    } catch (err) {
+        alert('Error submitting answer: ' + err.message);
+        answered = false;
+        document.querySelectorAll('.option-btn').forEach(b => b.disabled = false);
+    }
+}
+
+function showNextQuestion() {
+    renderQuestion();
+}
+
+async function showResults() {
+    hide('questionScreen');
+    show('loadingScreen');
+    document.getElementById('loadingText').textContent = 'Generating your personalized study plan...';
+    
+    try {
+        const res = await fetch(`${API}/diagnostic/summary?session_id=${sessionId}`);
+        const data = await res.json();
+        
+        if (!res.ok) {
+            throw new Error(data.detail || 'Failed to get results');
+        }
+        
+        // Render results
+        document.getElementById('finalScore').textContent = `${data.correct_count}/${data.total_questions}`;
+        document.getElementById('correctCount').textContent = data.correct_count;
+        document.getElementById('incorrectCount').textContent = data.incorrect_count;
+        document.getElementById('percentScore').textContent = `${data.percentage}%`;
+        
+        // Set proficiency badge
+        const badge = document.getElementById('proficiencyBadge');
+        badge.className = 'proficiency-badge ' + data.proficiency.toLowerCase();
+        const badges = { 'PRO': '🏆 PRO', 'AVERAGE': '⭐ AVERAGE', 'WEAK': '🎯 NEEDS WORK' };
+        badge.textContent = badges[data.proficiency] || data.proficiency;
+        
+        // Study plan
+        document.getElementById('studyPlanContent').textContent = data.study_plan;
+        
+        hide('loadingScreen');
+        show('resultsScreen');
+        
+        // Refresh history
+        loadHistory();
+        
+    } catch (err) {
+        alert('Error loading results: ' + err.message);
+        hide('loadingScreen');
+        showDashboard();
+    }
+}
+
+function backToDashboard() {
+    hide('resultsScreen');
+    showDashboard();
+}
+
+function retakeTest() {
+    hide('resultsScreen');
+    startTest();
+}
+
+// ─── History Functions ────────────────────────────────────────
+
+async function loadHistory() {
+    try {
+        const res = await fetch(`${API}/auth/history/${currentUser.username}`);
+        const data = await res.json();
+        
+        const historyList = document.getElementById('historyList');
+        
+        if (!data.history || data.history.length === 0) {
+            historyList.innerHTML = '<p style="color: var(--text-light); text-align: center;">No tests taken yet. Start your first test! 🚀</p>';
+            return;
+        }
+        
+        historyList.innerHTML = data.history.slice(0, 10).map(item => `
+            <div class="history-item">
+                <div class="history-info">
+                    <div class="history-subject">${item.subject} (${item.level})</div>
+                    <div class="history-meta">${item.num_questions} questions • ${new Date(item.completed_at).toLocaleDateString()}</div>
+                </div>
+                <div class="history-score">${item.score}/${item.num_questions}</div>
+            </div>
+        `).join('');
+        
+    } catch (err) {
+        console.error('Error loading history:', err);
+    }
+}
+
+// ─── Helpers ──────────────────────────────────────────────────
+
+function show(id) { document.getElementById(id).classList.remove('hidden'); }
+function hide(id) { document.getElementById(id).classList.add('hidden'); }
+
+// ─── Init ─────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Check for saved user
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+        try {
+            currentUser = JSON.parse(savedUser);
+            showDashboard();
+        } catch {
+            localStorage.removeItem('user');
+        }
+    }
+});
+</script>
+
+</body>
+</html>

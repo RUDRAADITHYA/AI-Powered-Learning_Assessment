@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Driven Adaptive Diagnostic Engine — Project Documentation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --accent: #7c3aed;
+            --bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --code-bg: #f1f5f9;
+            --success: #16a34a;
+            --warning: #ea580c;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text);
+            line-height: 1.7;
+            background: var(--bg);
+            font-size: 14px;
+        }
+
+        @media print {
+            body { font-size: 11pt; }
+            .page-break { page-break-before: always; }
+            .no-print { display: none; }
+            .container { max-width: 100%; padding: 0; }
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+
+        /* Cover Page */
+        .cover {
+            text-align: center;
+            padding: 100px 20px 60px;
+            border-bottom: 3px solid var(--primary);
+            margin-bottom: 40px;
+        }
+        .cover h1 {
+            font-size: 2.4em;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+        .cover .subtitle {
+            font-size: 1.2em;
+            color: var(--text-light);
+            margin-bottom: 40px;
+        }
+        .cover .meta {
+            font-size: 0.95em;
+            color: var(--text-light);
+            line-height: 2;
+        }
+        .cover .meta strong { color: var(--text); }
+
+        /* Section Headers */
+        h2 {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 40px 0 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border);
+        }
+        h3 {
+            font-size: 1.15em;
+            font-weight: 600;
+            color: var(--text);
+            margin: 28px 0 12px;
+        }
+        h4 {
+            font-size: 1em;
+            font-weight: 600;
+            color: var(--accent);
+            margin: 20px 0 8px;
+        }
+
+        p { margin-bottom: 12px; }
+
+        /* Table of Contents */
+        .toc {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px 30px;
+            margin: 20px 0 30px;
+        }
+        .toc h3 { margin-top: 0; color: var(--primary); }
+        .toc ol {
+            padding-left: 20px;
+        }
+        .toc li {
+            margin: 6px 0;
+            color: var(--text);
+        }
+        .toc a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .toc a:hover { text-decoration: underline; }
+
+        /* Info Boxes */
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 14px 18px;
+            border-radius: 0 6px 6px 0;
+            margin: 16px 0;
+        }
+        .info-box.accent {
+            background: #f5f3ff;
+            border-left-color: var(--accent);
+        }
+        .info-box.success {
+            background: #f0fdf4;
+            border-left-color: var(--success);
+        }
+
+        /* Code */
+        code {
+            font-family: 'Fira Code', monospace;
+            background: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 18px 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 14px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85em;
+            line-height: 1.6;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0;
+            font-size: 0.92em;
+        }
+        th {
+            background: var(--primary);
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        tr:nth-child(even) { background: #f8fafc; }
+
+        /* Lists */
+        ul, ol { padding-left: 24px; margin-bottom: 12px; }
+        li { margin: 4px 0; }
+
+        /* Architecture Diagram (ASCII) */
+        .diagram {
+            background: #fefce8;
+            border: 1px solid #fde047;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 16px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.82em;
+            line-height: 1.5;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        /* Flow Steps */
+        .flow-step {
+            display: flex;
+            align-items: flex-start;
+            margin: 14px 0;
+            gap: 14px;
+        }
+        .flow-step .step-num {
+            background: var(--primary);
+            color: white;
+            min-width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85em;
+            flex-shrink: 0;
+        }
+        .flow-step .step-content {
+            flex: 1;
+            padding-top: 4px;
+        }
+        .flow-step .step-content strong {
+            color: var(--primary-dark);
+        }
+
+        /* Formula */
+        .formula {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            text-align: center;
+            font-size: 1.05em;
+        }
+        .formula .label {
+            font-size: 0.8em;
+            color: var(--text-light);
+            margin-bottom: 6px;
+        }
+
+        /* Tech Stack Cards */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .tech-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+        }
+        .tech-card .tech-name {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        .tech-card .tech-role {
+            font-size: 0.85em;
+            color: var(--text-light);
+        }
+
+        .footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border);
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.85em;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+        .badge.green { background: var(--success); }
+        .badge.purple { background: var(--accent); }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- ===== COVER PAGE ===== -->
+    <div class="cover">
+        <h1>AI-Driven Adaptive Diagnostic Engine</h1>
+        <p class="subtitle">1-Dimension Adaptive Testing Prototype using Item Response Theory</p>
+        <div style="margin: 30px 0;">
+            <span class="badge">FastAPI</span>
+            <span class="badge purple">IRT Rasch Model</span>
+            <span class="badge green">Groq LLM</span>
+        </div>
+        <div class="meta">
+            <strong>Tech Stack:</strong> Python &bull; FastAPI &bull; MongoDB Atlas &bull; Groq AI<br>
+            <strong>Algorithm:</strong> 1-Parameter Item Response Theory (Rasch Model)<br>
+            <strong>Version:</strong> 1.0.0<br>
+        </div>
+    </div>
+
+    <!-- ===== TABLE OF CONTENTS ===== -->
+    <div class="toc">
+        <h3>Table of Contents</h3>
+        <ol>
+            <li><a href="#overview">Project Overview</a></li>
+            <li><a href="#architecture">System Architecture</a></li>
+            <li><a href="#techstack">Tech Stack</a></li>
+            <li><a href="#structure">Project Structure</a></li>
+            <li><a href="#data">Data Modeling (MongoDB)</a></li>
+            <li><a href="#algorithm">Adaptive Algorithm (IRT)</a></li>
+            <li><a href="#ai">AI Insights (Groq LLM)</a></li>
+            <li><a href="#api">API Documentation</a></li>
+            <li><a href="#userflow">User Flow — How to Use</a></li>
+            <li><a href="#setup">Setup & Installation</a></li>
+            <li><a href="#ailog">AI Log</a></li>
+        </ol>
+    </div>
+
+    <!-- ===== 1. OVERVIEW ===== -->
+    <h2 id="overview">1. Project Overview</h2>
+    <p>
+        The <strong>AI-Driven Adaptive Diagnostic Engine</strong> is a professional-grade adaptive testing system
+        that determines a student's proficiency level by <strong>dynamically selecting questions</strong> based on
+        their previous answers. Unlike traditional fixed-difficulty tests, this system adapts in real-time —
+        delivering harder questions when the student answers correctly and easier ones when they struggle.
+    </p>
+
+    <div class="info-box">
+        <strong>Core Idea:</strong> The system uses a mathematically rigorous algorithm (Item Response Theory)
+        to estimate student ability with maximum precision in minimal questions — typically just 10 questions
+        to get an accurate proficiency assessment.
+    </div>
+
+    <h3>Key Features</h3>
+    <ul>
+        <li><strong>Adaptive Question Selection</strong> — Questions chosen to maximize measurement precision (Fisher Information)</li>
+        <li><strong>IRT-Based Ability Estimation</strong> — Rasch Model with Maximum Likelihood Estimation updates</li>
+        <li><strong>22 GRE-Style Questions</strong> — Across 5 topics: Algebra, Vocabulary, Geometry, Reading Comprehension, Quantitative Reasoning</li>
+        <li><strong>AI-Powered Study Plans</strong> — Groq LLM (LLaMA 3.3 70B) generates personalized 3-step study plans</li>
+        <li><strong>Session Tracking</strong> — Full history of responses, ability progression, and analytics</li>
+        <li><strong>Interactive API Docs</strong> — Swagger UI auto-generated at <code>/docs</code></li>
+    </ul>
+
+    <!-- ===== 2. ARCHITECTURE ===== -->
+    <div class="page-break"></div>
+    <h2 id="architecture">2. System Architecture</h2>
+
+    <p>The system follows a <strong>clean, layered architecture</strong> with strict separation of concerns:</p>
+
+    <div class="diagram">
+┌─────────────────────────────────────────────────────────────┐
+│                      CLIENT (Browser / API)                  │
+│                    Swagger UI at /docs                        │
+└──────────────────────────┬──────────────────────────────────┘
+                           │  HTTP (REST API)
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    FASTAPI APPLICATION                        │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │              ROUTERS (API Layer)                      │    │
+│  │   diagnostic.py  │  questions.py                     │    │
+│  │   /start          │  /list                           │    │
+│  │   /next-question  │  /seed                           │    │
+│  │   /submit-answer  │  /topics                         │    │
+│  │   /session-summary│                                  │    │
+│  └────────┬──────────┴──────────────────────────────────┘    │
+│           │                                                   │
+│  ┌────────▼─────────────────────────────────────────────┐    │
+│  │              SERVICES (Business Logic)                │    │
+│  │                                                       │    │
+│  │  adaptive.py          question_service.py             │    │
+│  │  ├─ ICC Probability    ├─ Select Next Question        │    │
+│  │  ├─ Update Ability     └─ Fisher Info Ranking         │    │
+│  │  ├─ Fisher Information                                │    │
+│  │  └─ Final MLE          ai_insights.py                 │    │
+│  │                         └─ Groq LLM Study Plan        │    │
+│  └────────┬──────────────────────────┬──────────────────┘    │
+│           │                          │                        │
+│  ┌────────▼──────────┐    ┌─────────▼──────────────────┐    │
+│  │    MODELS          │    │    CONFIG                   │    │
+│  │  question.py       │    │  config.py (.env)           │    │
+│  │  session.py        │    │  database.py (Motor)        │    │
+│  └────────────────────┘    └────────────┬──────────────┘    │
+└─────────────────────────────────────────┼────────────────────┘
+                                          │
+                    ┌─────────────────────┼──────────────────┐
+                    │                     │                   │
+              ┌─────▼──────┐     ┌───────▼────────┐         │
+              │  MongoDB    │     │   Groq API      │         │
+              │  Atlas      │     │   (LLaMA 3.3)   │         │
+              │  (Cloud DB) │     │   Study Plans    │         │
+              └─────────────┘     └─────────────────┘         │
+                    │                                          │
+                    └──────────────────────────────────────────┘</div>
+
+    <h3>Architecture Layers</h3>
+    <table>
+        <tr><th>Layer</th><th>Responsibility</th><th>Files</th></tr>
+        <tr><td><strong>Routers</strong></td><td>HTTP endpoint handling, request/response validation</td><td>diagnostic.py, questions.py</td></tr>
+        <tr><td><strong>Services</strong></td><td>Core business logic — IRT algorithm, question selection, AI integration</td><td>adaptive.py, question_service.py, ai_insights.py</td></tr>
+        <tr><td><strong>Models</strong></td><td>Pydantic schemas for data validation and serialization</td><td>question.py, session.py</td></tr>
+        <tr><td><strong>Data</strong></td><td>MongoDB async driver, connection management, seeding</td><td>database.py, seed.py</td></tr>
+        <tr><td><strong>Config</strong></td><td>Environment variables, app settings</td><td>config.py, .env</td></tr>
+    </table>
+
+    <!-- ===== 3. TECH STACK ===== -->
+    <h2 id="techstack">3. Tech Stack</h2>
+    <div class="tech-grid">
+        <div class="tech-card">
+            <div class="tech-name">Python 3.11+</div>
+            <div class="tech-role">Core Language</div>
+        </div>
+        <div class="tech-card">
+            <div class="tech-name">FastAPI</div>
+            <div class="tech-role">Web Framework</div>
+        </div>
+        <div class="tech-card">
+            <div class="tech-name">MongoDB Atlas</div>
+            <div class="tech-role">Cloud Database</div>
+        </div>
+        <div class="tech-card">
+            <div class="tech-name">Motor</div>
+            <div class="tech-role">Async MongoDB Driver</div>
+        </div>
+        <div class="tech-card">
+            <div class="tech-name">Groq API</div>
+            <div class="tech-role">LLM (LLaMA 3.3 70B)</div>
+        </div>
+        <div class="tech-card">
+            <div class="tech-name">Pydantic v2</div>
+            <div class="tech-role">Data Validation</div>
+        </div>
+    </div>
+
+    <!-- ===== 4. PROJECT STRUCTURE ===== -->
+    <h2 id="structure">4. Project Structure</h2>
+    <pre><code>adaptie-diagnosist/
+├── app/
+│   ├── __init__.py
+│   ├── main.py                  # FastAPI app entry + lifespan events
+│   ├── config.py                # Pydantic settings (reads .env)
+│   ├── database.py              # Motor async MongoDB connection
+│   ├── seed.py                  # 22 GRE-style seed questions
+│   ├── models/
+│   │   ├── question.py          # Question & QuestionOut schemas
+│   │   └── session.py           # UserSession, request/response models
+│   ├── routers/
+│   │   ├── diagnostic.py        # Core adaptive test endpoints
+│   │   └── questions.py         # Question bank management
+│   └── services/
+│       ├── adaptive.py          # IRT Rasch model algorithm
+│       ├── question_service.py  # Question selection (Fisher Info)
+│       └── ai_insights.py       # Groq LLM study plan generation
+├── docs/
+│   └── project_documentation.html
+├── .env                         # Environment variables (secrets)
+├── .env.example                 # Template for .env
+├── .gitignore
+├── requirements.txt
+├── run.py                       # Server entry point
+└── README.md</code></pre>
+
+    <!-- ===== 5. DATA MODELING ===== -->
+    <div class="page-break"></div>
+    <h2 id="data">5. Data Modeling (MongoDB)</h2>
+
+    <h3>5.1 Questions Collection</h3>
+    <p>Stores 22 GRE-style questions across 5 topics, each with calibrated difficulty scores.</p>
+    <pre><code>{
+  "_id": ObjectId("..."),
+  "question_text": "If x² - 5x + 6 = 0, what are the values of x?",
+  "options": ["2 and 3", "1 and 6", "-2 and -3", "3 and 6"],
+  "correct_answer": "2 and 3",
+  "difficulty": 0.5,          // 0.1 (easy) → 1.0 (hard)
+  "topic": "Algebra",
+  "tags": ["quadratic", "factoring"]
+}</code></pre>
+
+    <h4>Topics & Difficulty Distribution</h4>
+    <table>
+        <tr><th>Topic</th><th>Count</th><th>Difficulty Range</th></tr>
+        <tr><td>Algebra</td><td>5</td><td>0.15 – 0.85</td></tr>
+        <tr><td>Vocabulary</td><td>5</td><td>0.10 – 0.90</td></tr>
+        <tr><td>Geometry</td><td>4</td><td>0.15 – 0.70</td></tr>
+        <tr><td>Reading Comprehension</td><td>3</td><td>0.20 – 0.60</td></tr>
+        <tr><td>Quantitative Reasoning</td><td>5</td><td>0.20 – 0.80</td></tr>
+    </table>
+
+    <h4>Indexes (Performance Optimization)</h4>
+    <ul>
+        <li><code>difficulty</code> — For range queries during question selection</li>
+        <li><code>topic</code> — For topic-filtered queries</li>
+        <li><code>(difficulty, topic)</code> — Compound index for combined filtering</li>
+    </ul>
+
+    <h3>5.2 UserSession Collection</h3>
+    <p>Tracks each student's adaptive test session with full response history.</p>
+    <pre><code>{
+  "session_id": "uuid-v4-string",
+  "current_ability": 0.65,       // θ (theta) — estimated ability
+  "is_complete": false,
+  "created_at": "2026-03-11T...",
+  "responses": [
+    {
+      "question_id": "...",
+      "question_text": "...",
+      "topic": "Algebra",
+      "difficulty": 0.5,
+      "selected_answer": "2 and 3",
+      "correct_answer": "2 and 3",
+      "is_correct": true,
+      "ability_after": 0.575
+    }
+  ],
+  "study_plan": "AI-generated plan (after completion)"
+}</code></pre>
+
+    <!-- ===== 6. ALGORITHM ===== -->
+    <div class="page-break"></div>
+    <h2 id="algorithm">6. Adaptive Algorithm — Item Response Theory</h2>
+
+    <div class="info-box accent">
+        <strong>Why IRT?</strong> Item Response Theory is the gold standard for adaptive testing, used by
+        the GRE, GMAT, and other major standardized tests. It provides a mathematically rigorous way to
+        estimate ability and select optimal questions.
+    </div>
+
+    <h3>6.1 The Rasch Model (1-Parameter IRT)</h3>
+    <p>The probability that a student with ability <strong>θ</strong> answers a question of difficulty <strong>b</strong> correctly:</p>
+
+    <div class="formula">
+        <div class="label">Item Characteristic Curve (ICC)</div>
+        <strong>P(correct | θ, b) = 1 / (1 + e<sup>-a(θ - b)</sup>)</strong>
+    </div>
+
+    <table>
+        <tr><th>Parameter</th><th>Description</th><th>Value/Range</th></tr>
+        <tr><td><strong>θ (theta)</strong></td><td>Student ability — latent trait</td><td>0.05 – 0.95</td></tr>
+        <tr><td><strong>b</strong></td><td>Item difficulty</td><td>0.10 – 1.00</td></tr>
+        <tr><td><strong>a</strong></td><td>Discrimination constant (fixed)</td><td>4.0</td></tr>
+    </table>
+
+    <p><strong>Key property:</strong> When θ = b, the probability is exactly 50%. This is the point of maximum information.</p>
+
+    <h3>6.2 Ability Update (After Each Response)</h3>
+    <p>After each answer, the student's ability estimate is updated using a gradient-ascent step on the log-likelihood:</p>
+
+    <div class="formula">
+        <div class="label">Maximum Likelihood Estimation Update</div>
+        <strong>θ<sub>new</sub> = θ<sub>old</sub> + η × (y - P(θ, b))</strong>
+    </div>
+
+    <table>
+        <tr><th>Variable</th><th>Meaning</th></tr>
+        <tr><td><strong>y</strong></td><td>1 if correct, 0 if incorrect</td></tr>
+        <tr><td><strong>η</strong></td><td>Learning rate = 0.15</td></tr>
+        <tr><td><strong>y - P</strong></td><td>Residual: positive = outperformed model, negative = underperformed</td></tr>
+    </table>
+
+    <div class="info-box success">
+        <strong>Example:</strong> Student at θ=0.5 answers a b=0.5 question correctly.<br>
+        P(correct) = 0.50, residual = 1.0 - 0.50 = 0.50<br>
+        θ_new = 0.5 + 0.15 × 0.50 = <strong>0.575</strong> (ability increases)
+    </div>
+
+    <h3>6.3 Question Selection (Maximum Fisher Information)</h3>
+    <p>The next question is chosen to <strong>maximize measurement precision</strong>:</p>
+
+    <div class="formula">
+        <div class="label">Fisher Information Function</div>
+        <strong>I(θ, b) = a² × P(θ, b) × (1 - P(θ, b))</strong>
+    </div>
+
+    <p>Fisher Information peaks when <code>b = θ</code> (question difficulty matches student ability). The engine:</p>
+    <ol>
+        <li>Fetches unanswered questions near the student's current ability</li>
+        <li>Computes Fisher Information for each candidate</li>
+        <li>Picks the question with the <strong>highest information value</strong></li>
+    </ol>
+
+    <h3>6.4 Final Ability Computation</h3>
+    <p>After all 10 questions, the final ability is recomputed from scratch using <strong>iterative Newton-Raphson MLE</strong>
+    over ALL responses. This is more stable than the incremental per-question updates.</p>
+
+    <h3>6.5 Complete Adaptive Flow</h3>
+    <div class="diagram">
+    START
+      │
+      ▼
+    θ = 0.5 (baseline ability)
+      │
+      ▼
+    ┌─────────────────────────────────┐
+    │  Select question where b ≈ θ    │◄──────────────┐
+    │  (maximize Fisher Information)   │               │
+    └──────────────┬──────────────────┘               │
+                   │                                   │
+                   ▼                                   │
+            Student Answers                            │
+                   │                                   │
+           ┌───────┴───────┐                          │
+           │               │                          │
+        Correct         Incorrect                     │
+           │               │                          │
+     θ increases      θ decreases                     │
+           │               │                          │
+           └───────┬───────┘                          │
+                   │                                   │
+                   ▼                                   │
+          Questions < 10? ──── YES ───────────────────┘
+                   │
+                  NO
+                   │
+                   ▼
+         Final MLE (Newton-Raphson)
+                   │
+                   ▼
+         Generate AI Study Plan
+                   │
+                   ▼
+                 DONE</div>
+
+    <!-- ===== 7. AI INSIGHTS ===== -->
+    <div class="page-break"></div>
+    <h2 id="ai">7. AI Insights — Groq LLM Integration</h2>
+
+    <p>After completing 10 questions, the system sends a structured performance summary to the <strong>Groq API</strong>
+    (LLaMA 3.3 70B Versatile model) and receives a <strong>personalized 3-step study plan</strong>.</p>
+
+    <h3>Data Sent to LLM</h3>
+    <ul>
+        <li><strong>Final Ability Score</strong> — 0 to 1 scale</li>
+        <li><strong>Difficulty Level Reached</strong> — Maximum difficulty answered correctly</li>
+        <li><strong>Score</strong> — X/10 correct</li>
+        <li><strong>Weak Topics</strong> — Topics with incorrect answers</li>
+        <li><strong>Strong Topics</strong> — Topics with correct answers</li>
+    </ul>
+
+    <h3>Prompt Strategy</h3>
+    <p>The system uses a structured prompt that instructs the LLM to act as a GRE tutor and produce a concise,
+    actionable 3-step plan that:</p>
+    <ol>
+        <li>Targets the student's specific weaknesses</li>
+        <li>Builds on their existing strengths</li>
+        <li>Includes concrete practice recommendations</li>
+    </ol>
+
+    <div class="info-box">
+        <strong>Caching:</strong> The study plan is generated once and cached in the UserSession document.
+        Subsequent requests for the same session return the cached plan without additional API calls.
+    </div>
+
+    <!-- ===== 8. API DOCUMENTATION ===== -->
+    <h2 id="api">8. API Documentation</h2>
+
+    <p>Interactive documentation available at <code>http://localhost:8000/docs</code> (Swagger UI).</p>
+
+    <h3>8.1 Endpoint Reference</h3>
+    <table>
+        <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+        <tr><td><span class="badge green">GET</span></td><td><code>/</code></td><td>Health check & endpoint listing</td></tr>
+        <tr><td><span class="badge">POST</span></td><td><code>/diagnostic/start</code></td><td>Start a new adaptive test session</td></tr>
+        <tr><td><span class="badge green">GET</span></td><td><code>/diagnostic/next-question</code></td><td>Get the next adaptively-selected question</td></tr>
+        <tr><td><span class="badge">POST</span></td><td><code>/diagnostic/submit-answer</code></td><td>Submit answer & update ability</td></tr>
+        <tr><td><span class="badge green">GET</span></td><td><code>/diagnostic/session-summary</code></td><td>Full results + AI study plan</td></tr>
+        <tr><td><span class="badge green">GET</span></td><td><code>/questions/</code></td><td>Browse question bank (with filters)</td></tr>
+        <tr><td><span class="badge">POST</span></td><td><code>/questions/seed</code></td><td>Re-seed question database</td></tr>
+        <tr><td><span class="badge green">GET</span></td><td><code>/questions/topics</code></td><td>List all question topics</td></tr>
+    </table>
+
+    <h3>8.2 Request/Response Examples</h3>
+
+    <h4>POST /diagnostic/start</h4>
+    <pre><code>// Request: No body required
+// Response:
+{
+  "session_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "message": "Adaptive test session started.",
+  "initial_ability": 0.5
+}</code></pre>
+
+    <h4>GET /diagnostic/next-question?session_id=...</h4>
+    <pre><code>// Response:
+{
+  "id": "665f1a2b3c4d5e6f7a8b9c0d",
+  "question_text": "If x² - 5x + 6 = 0, what are the values of x?",
+  "options": ["2 and 3", "1 and 6", "-2 and -3", "3 and 6"],
+  "difficulty": 0.5,
+  "topic": "Algebra",
+  "tags": ["quadratic", "factoring"],
+  "question_number": 1,
+  "total_questions": 10
+}</code></pre>
+
+    <h4>POST /diagnostic/submit-answer</h4>
+    <pre><code>// Request:
+{
+  "session_id": "a1b2c3d4-...",
+  "question_id": "665f1a2b3c4d5e6f7a8b9c0d",
+  "selected_answer": "2 and 3"
+}
+
+// Response:
+{
+  "is_correct": true,
+  "correct_answer": "2 and 3",
+  "previous_ability": 0.5,
+  "updated_ability": 0.575,
+  "questions_remaining": 9,
+  "is_complete": false
+}</code></pre>
+
+    <h4>GET /diagnostic/session-summary?session_id=...</h4>
+    <pre><code>// Response:
+{
+  "session_id": "a1b2c3d4-...",
+  "total_questions": 10,
+  "correct_count": 7,
+  "incorrect_count": 3,
+  "final_ability": 0.72,
+  "difficulty_reached": 0.85,
+  "topics_missed": ["Vocabulary", "Geometry"],
+  "topics_strong": ["Algebra", "Quantitative Reasoning"],
+  "responses": [...],
+  "study_plan": "**Step 1:** Focus on...\n**Step 2:** Practice...\n**Step 3:** Review..."
+}</code></pre>
+
+    <!-- ===== 9. USER FLOW ===== -->
+    <div class="page-break"></div>
+    <h2 id="userflow">9. User Flow — How to Use the Application</h2>
+
+    <div class="flow-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+            <strong>Open Swagger UI</strong><br>
+            Navigate to <code>http://localhost:8000/docs</code> in your browser. This is the interactive API playground.
+        </div>
+    </div>
+
+    <div class="flow-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+            <strong>Start a New Session</strong><br>
+            Click <code>POST /diagnostic/start</code> → "Try it out" → "Execute".<br>
+            Copy the <code>session_id</code> from the response.
+        </div>
+    </div>
+
+    <div class="flow-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+            <strong>Get Your First Question</strong><br>
+            Click <code>GET /diagnostic/next-question</code> → paste your session_id → Execute.<br>
+            The system selects a question at difficulty 0.5 (your baseline).
+            Note the <code>id</code> and <code>options</code>.
+        </div>
+    </div>
+
+    <div class="flow-step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+            <strong>Submit Your Answer</strong><br>
+            Click <code>POST /diagnostic/submit-answer</code> → provide session_id, question_id, and selected_answer (the exact option text).<br>
+            The response tells you if you were correct and shows your updated ability score.
+        </div>
+    </div>
+
+    <div class="flow-step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+            <strong>Repeat 10 Times</strong><br>
+            Alternate between "Get Next Question" and "Submit Answer" for 10 questions.<br>
+            ✅ Correct → Next question is <strong>harder</strong><br>
+            ❌ Incorrect → Next question is <strong>easier</strong><br>
+            Watch your ability score change after each answer.
+        </div>
+    </div>
+
+    <div class="flow-step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+            <strong>Get Your Results & Study Plan</strong><br>
+            After question 10, call <code>GET /diagnostic/session-summary</code>.<br>
+            You'll receive: final score, ability estimate, strong/weak topics, and a <strong>personalized 3-step AI study plan</strong> from Groq LLM.
+        </div>
+    </div>
+
+    <div class="info-box success">
+        <strong>Pro Tip:</strong> You can also use <code>GET /questions/</code> to browse all available questions
+        filtered by topic or difficulty, and <code>GET /questions/topics</code> to see all subject areas.
+    </div>
+
+    <!-- ===== 10. SETUP ===== -->
+    <h2 id="setup">10. Setup & Installation</h2>
+
+    <h3>Prerequisites</h3>
+    <ul>
+        <li>Python 3.11+</li>
+        <li>MongoDB (local or Atlas cloud)</li>
+        <li>Groq API key (free at <code>console.groq.com</code>)</li>
+    </ul>
+
+    <h3>Installation Steps</h3>
+    <pre><code># 1. Clone the repository
+git clone &lt;repo-url&gt;
+cd adaptie-diagnosist
+
+# 2. Create virtual environment
+python -m venv venv
+venv\Scripts\activate        # Windows
+source venv/bin/activate     # macOS/Linux
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Configure environment
+cp .env.example .env
+# Edit .env with your MongoDB URI and Groq API key
+
+# 5. Run the server
+python run.py
+# Server starts at http://localhost:8000</code></pre>
+
+    <h3>Environment Variables</h3>
+    <table>
+        <tr><th>Variable</th><th>Description</th><th>Example</th></tr>
+        <tr><td><code>MONGODB_URI</code></td><td>MongoDB connection string</td><td><code>mongodb+srv://user:pass@cluster.mongodb.net/</code></td></tr>
+        <tr><td><code>DATABASE_NAME</code></td><td>Database name</td><td><code>adaptive_diagnostic</code></td></tr>
+        <tr><td><code>GROQ_API_KEY</code></td><td>Groq API key</td><td><code>gsk_...</code></td></tr>
+        <tr><td><code>APP_HOST</code></td><td>Server host</td><td><code>0.0.0.0</code></td></tr>
+        <tr><td><code>APP_PORT</code></td><td>Server port</td><td><code>8000</code></td></tr>
+    </table>
+
+    <!-- ===== 11. AI LOG ===== -->
+    <div class="page-break"></div>
+    <h2 id="ailog">11. AI Log</h2>
+
+    <h3>How AI Tools Were Used</h3>
+    <table>
+        <tr><th>Tool</th><th>Usage</th></tr>
+        <tr><td><strong>GitHub Copilot</strong></td><td>Primary development — project scaffolding, IRT algorithm implementation, Groq integration, seed data generation, API documentation</td></tr>
+    </table>
+
+    <h3>AI Accelerated Areas</h3>
+    <ul>
+        <li>FastAPI project structure with clean module separation</li>
+        <li>22 realistic GRE-style questions with calibrated difficulties</li>
+        <li>IRT Rasch model implementation (ICC, Fisher Information, MLE updates)</li>
+        <li>Groq LLM prompt engineering for study plan generation</li>
+        <li>Pydantic v2 model design with proper validation</li>
+        <li>MongoDB async driver setup with Motor</li>
+    </ul>
+
+    <h3>Challenges AI Couldn't Fully Solve</h3>
+    <ol>
+        <li><strong>IRT Parameter Tuning</strong> — The discrimination constant (a = 4.0) and learning rate (η = 0.15)
+        required manual tuning and verification through testing. AI gave reasonable starting values, but the final
+        calibration needed human judgment to ensure ability estimates stayed within [0, 1] and remained responsive but stable.</li>
+
+        <li><strong>Fisher Information vs Simple Matching</strong> — Initial AI suggestion was nearest-difficulty matching.
+        The upgrade to Fisher Information maximization (the theoretically optimal approach for CAT selection)
+        was a deliberate architectural decision requiring IRT domain knowledge.</li>
+
+        <li><strong>MongoDB Index Strategy</strong> — Choosing compound indexes on (difficulty, topic) required
+        understanding the actual query patterns of the adaptive algorithm's progressive search windows.</li>
+    </ol>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <p><strong>AI-Driven Adaptive Diagnostic Engine</strong> — v1.0.0</p>
+        <p>Built with Python &bull; FastAPI &bull; MongoDB &bull; Groq AI &bull; IRT Rasch Model</p>
+    </div>
+
+</div>
+</body>
+</html>
